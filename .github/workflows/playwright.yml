@@ -21,7 +21,7 @@ jobs:
         env:
           CI: true
           USER_EMAIL: ${{ secrets.USER_EMAIL }}
-          USER_PASSWORD: ${{ secrets.USER_PASSWORD }}
+          USER_PASSWORD: ${{ secrets.USER_PASSWORD }}  
         run: npx playwright test
       - uses: actions/upload-artifact@v4
         if: ${{ !cancelled() }}
