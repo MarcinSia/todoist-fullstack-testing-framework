@@ -7,7 +7,7 @@ import { ProjectResponse } from '../../models/project.model';
 import { getRequest } from '../../requests/get.request';
 import { TODOIST_AUTH_HEADERS } from '../../requests/todoist.auth.headers';
 
-export const getProjectIdByNameAPISteps = async (projectName: string): Promise<string> => {
+export const getProjectIdByNameAPIStep = async (projectName: string): Promise<string> => {
   let projectId: string | null = null;
 
   await expect
