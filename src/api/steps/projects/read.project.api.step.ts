@@ -1,30 +1,34 @@
+/* eslint-disable @typescript-eslint/no-unnecessary-condition */
 /* eslint-disable no-console */
-import { API_URL, PROJECTS_ENDPOINT } from "../../config/api.config";
-import { parseResponse } from "../../helpers/parse.response.helper";
-import { ProjectResponse } from "../../models/project.model";
-import { getRequest } from "../../requests/get.request";
-import { TODOIST_AUTH_HEADERS } from "../../requests/todoist.auth.headers";
+import { expect } from '@playwright/test';
+import { API_URL, PROJECTS_ENDPOINT } from '../../config/api.config';
+import { parseResponse } from '../../helpers/parse.response.helper';
+import { ProjectResponse } from '../../models/project.model';
+import { getRequest } from '../../requests/get.request';
+import { TODOIST_AUTH_HEADERS } from '../../requests/todoist.auth.headers';
 
-export const getProjectIdByNameAPISteps = async (projectName: string): Promise<string | null> => {
-  const timeout = 5000;
-  const interval = 500;
-  const start = Date.now();
+export const getProjectIdByNameAPISteps = async (projectName: string): Promise<string> => {
   let projectId: string | null = null;
 
-   while (Date.now() - start < timeout) {
-    console.log(`Checking for project "${projectName}"...`);
+  await expect
+    .poll(
+      async () => {
+        console.log(`Checking for project "${projectName}"...`);
+        const response = await getRequest(`${API_URL}/${PROJECTS_ENDPOINT}`, TODOIST_AUTH_HEADERS);
+        if (!response.ok) return null;
 
-    const response = await getRequest(`${API_URL}/${PROJECTS_ENDPOINT}`, TODOIST_AUTH_HEADERS);
-    if (response.ok()) {
-      const projects = await parseResponse<ProjectResponse[]>(response);
-      const project = projects.find((p) => p.name === projectName);
-      if (project) {
-        projectId = project.id;
-        break;
-      }
-    }
-    await new Promise((res) => setTimeout(res, interval));
-  }
+        const projects = await parseResponse<ProjectResponse[]>(response);
+        const project = projects.find((p) => p.name.trim() === projectName.trim());
+        projectId = project ? project.id : null;
 
-  return projectId;
+        return projectId;
+      },
+      {
+        message: `Project with name "${projectName}" should exist`,
+        timeout: 5000,
+      },
+    )
+    .not.toBeNull();
+
+  return projectId as unknown as string;
 };
