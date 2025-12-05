@@ -5,6 +5,7 @@ import { DeleteProjectModal } from '../modals/DeleteProjectModal';
 import { SearchProjectModal } from '../modals/SearchProjectModal';
 import { CreateProjectModel } from '../models/create-project.model';
 import { BaseComponent } from './BaseComponent';
+import { getProjectIdByNameAPIStep } from '../api/steps/projects/read.project.api.step';
 
 export class LeftMenuComponent extends BaseComponent {
   // Components
@@ -40,6 +41,9 @@ export class LeftMenuComponent extends BaseComponent {
     await expect(this.addProjectModal.addProjectForm()).toBeVisible();
     this.log.info(`✅ Creating new project: ${project.name} - ${project.color}`);
     await this.addProjectModal.addNewProject(project.name, project.color);
+
+    // API check
+    expect(await getProjectIdByNameAPIStep(project.name)).toBeTruthy();
   }
 
   async getAllProjectNames(): Promise<string[]> {
