@@ -23,6 +23,7 @@ setup('login with valid credentials', async ({ page }) => {
   await page.getByPlaceholder(emailPlaceholder).fill(email);
   await page.getByPlaceholder(passwordPlaceholder).fill(password);
   await page.getByRole('button', { name: loginButtonName }).click();
+  await page.getByText(/Dziś/).first().click();
 
   // Assert
   await expect(page).toHaveURL('https://app.todoist.com/app/today', { timeout: 10_000 });
