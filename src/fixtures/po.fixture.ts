@@ -1,6 +1,8 @@
+/* eslint-disable no-empty-pattern */
 import { test as base } from '@playwright/test';
 import { ILogObj, Logger } from 'tslog';
 import { HomePage } from '../pages/HomePage';
+import { deleteAllProjectsApiStep } from '../api/steps/projects/delete.project.api.step';
 
 interface Pages {
   homePage: HomePage;
@@ -25,19 +27,17 @@ const pages = base.extend<Pages & Log>({
 export const test = pages.extend<{ forEachTest: void }>({
   forEachTest: [
     // eslint-disable-next-line @typescript-eslint/explicit-function-return-type
-    async ({ page }, use) => {
+    async ({}, use) => {
       // This code runs before every test.
       const log = new Logger<ILogObj>();
       log.info('🧹 Global hook: beforeEach');
-      const homePage = new HomePage(page);
-      await homePage.open();
-      await homePage.leftPanel.deleteAllProjects();
+      await deleteAllProjectsApiStep();
 
       await use();
 
       // This code runs after every test.
       log.info('🧹 Global hook: afterEach');
-      await homePage.leftPanel.deleteAllProjects();
+      await deleteAllProjectsApiStep();
     },
     { auto: true },
   ],
